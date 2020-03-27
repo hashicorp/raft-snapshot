@@ -171,7 +171,7 @@ func Parse(in io.Reader, out io.Writer) (*raft.SnapshotMeta, error) {
 	}
 	defer decomp.Close()
 
-	// Read the archive, throwing away the snapshot data.
+	// Read the archive, and write the snapshot data to out.
 	var metadata raft.SnapshotMeta
 	if err := read(decomp, &metadata, out, nil); err != nil {
 		return nil, fmt.Errorf("failed to read snapshot file: %v", err)
