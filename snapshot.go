@@ -172,11 +172,11 @@ func Verify(in io.Reader) (*raft.SnapshotMeta, error) {
 // The docs for gzip.Reader say: "Clients should treat data returned by Read as
 // tentative until they receive the io.EOF marking the end of the data."
 func concludeGzipRead(decomp *gzip.Reader) error {
-	extra, err := ioutil.ReadAll(decomp) // ReadAll consumes the EOF
+	extra, err := io.Copy(ioutil.Discard, decomp) // Copy consumes the EOF
 	if err != nil {
 		return err
-	} else if len(extra) != 0 {
-		return fmt.Errorf("%d unread uncompressed bytes remain", len(extra))
+	} else if extra != 0 {
+		return fmt.Errorf("%d unread uncompressed bytes remain", extra)
 	}
 	return nil
 }
