@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -134,7 +133,7 @@ func TestSnapshot(t *testing.T) {
 	// apply off to a buffer for checking post-snapshot.
 	var expected []bytes.Buffer
 	entries := 64 * 1024
-	before, _ := makeRaft(t, path.Join(dir, "before"))
+	before, _ := makeRaft(t, filepath.Join(dir, "before"))
 	defer before.Shutdown()
 	for i := 0; i < entries; i++ {
 		var log bytes.Buffer
@@ -177,7 +176,7 @@ func TestSnapshot(t *testing.T) {
 	}
 
 	// Make a new, independent Raft.
-	after, fsm := makeRaft(t, path.Join(dir, "after"))
+	after, fsm := makeRaft(t, filepath.Join(dir, "after"))
 	defer after.Shutdown()
 
 	// Put some initial data in there that the snapshot should overwrite.
@@ -296,7 +295,7 @@ func TestSnapshot_BadRestore(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	// Make a Raft and populate it with some data.
-	before, _ := makeRaft(t, path.Join(dir, "before"))
+	before, _ := makeRaft(t, filepath.Join(dir, "before"))
 	defer before.Shutdown()
 	for i := 0; i < 16*1024; i++ {
 		var log bytes.Buffer
@@ -317,7 +316,7 @@ func TestSnapshot_BadRestore(t *testing.T) {
 	}
 
 	// Make a new, independent Raft.
-	after, fsm := makeRaft(t, path.Join(dir, "after"))
+	after, fsm := makeRaft(t, filepath.Join(dir, "after"))
 	defer after.Shutdown()
 
 	// Put some initial data in there that should not be harmed by the
