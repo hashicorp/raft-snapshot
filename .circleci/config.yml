@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   go-test:
     docker:
-      - image: golang:1.14
+      - image: docker.mirror.hashicorp.services/golang:1.14
     steps:
       - checkout
       - run: go get -u ./...
