@@ -122,7 +122,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 	}); err != nil {
 		return fmt.Errorf("failed to write snapshot metadata header: %v", err)
 	}
-	if err := copyEOFOrN(archive, io.TeeReader(&metaBuffer, metaHash), 8192); err != nil {
+	if _, err := io.Copy(archive, io.TeeReader(&metaBuffer, metaHash)); err != nil {
 		return fmt.Errorf("failed to write snapshot metadata: %v", err)
 	}
 
@@ -153,7 +153,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 	}); err != nil {
 		return fmt.Errorf("failed to write snapshot hashes header: %v", err)
 	}
-	if err := copyEOFOrN(archive, &shaBuffer, 8192); err != nil {
+	if _, err := io.Copy(archive, &shaBuffer); err != nil {
 		return fmt.Errorf("failed to write snapshot hashes: %v", err)
 	}
 
@@ -178,7 +178,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 		}); err != nil {
 			return fmt.Errorf("failed to write sealed snapshot hashes header: %v", err)
 		}
-		if err := copyEOFOrN(archive, sealedSHABuffer, 8192); err != nil {
+		if _, err := io.Copy(archive, sealedSHABuffer); err != nil {
 			return fmt.Errorf("failed to write sealed snapshot hashes: %v", err)
 		}
 	}
