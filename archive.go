@@ -280,10 +280,13 @@ func read(in io.Reader, metadata *raft.SnapshotMeta, snap io.Writer, sealer Seal
 
 // copyEOFOrN copies until either EOF or maxBytesToRead was hit, or an error
 // occurs. If a non-EOF error occurs, return it
-func copyEOFOrN(dst io.Writer, src io.Reader, maxBytesToRead int64) error {
-	_, err := io.CopyN(dst, src, maxBytesToRead)
+func copyEOFOrN(dst io.Writer, src io.Reader, maxBytesToCopy int64) error {
+	copied, err := io.CopyN(dst, src, maxBytesToCopy)
 	if err == io.EOF {
 		return nil
+	}
+	if copied == maxBytesToCopy {
+		return fmt.Errorf("read max specified bytes (%d) without EOF - possible truncation", copied)
 	}
 
 	return err
