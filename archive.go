@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"time"
 
 	"github.com/hashicorp/raft"
@@ -230,11 +229,11 @@ func read(in io.Reader, metadata *raft.SnapshotMeta, snap io.Writer, sealer Seal
 			// turn made the snapshot verification fail. By explicitly reading the
 			// whole thing first we ensure that we calculate the correct hash
 			// independent of how json.Decode works internally.
-			buf, err := ioutil.ReadAll(io.TeeReader(archive, metaHash))
-			if err != nil {
+			buf := new(bytes.Buffer)
+			if err := copyEOFOrN(buf, io.TeeReader(archive, metaHash), 8192); err != nil {
 				return fmt.Errorf("failed to read snapshot metadata: %v", err)
 			}
-			if err := json.Unmarshal(buf, &metadata); err != nil {
+			if err := json.Unmarshal(buf.Bytes(), &metadata); err != nil {
 				return fmt.Errorf("failed to decode snapshot metadata: %v", err)
 			}
 
