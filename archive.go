@@ -122,7 +122,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 	}); err != nil {
 		return fmt.Errorf("failed to write snapshot metadata header: %v", err)
 	}
-	if _, err := io.Copy(archive, io.TeeReader(&metaBuffer, metaHash)); err != nil {
+	if err := copyEOFOrN(archive, io.TeeReader(&metaBuffer, metaHash), 8192); err != nil {
 		return fmt.Errorf("failed to write snapshot metadata: %v", err)
 	}
 
@@ -153,7 +153,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 	}); err != nil {
 		return fmt.Errorf("failed to write snapshot hashes header: %v", err)
 	}
-	if _, err := io.Copy(archive, &shaBuffer); err != nil {
+	if err := copyEOFOrN(archive, &shaBuffer, 8192); err != nil {
 		return fmt.Errorf("failed to write snapshot hashes: %v", err)
 	}
 
@@ -178,7 +178,7 @@ func write(out io.Writer, metadata *raft.SnapshotMeta, snap io.Reader, sealer Se
 		}); err != nil {
 			return fmt.Errorf("failed to write sealed snapshot hashes header: %v", err)
 		}
-		if _, err := io.Copy(archive, sealedSHABuffer); err != nil {
+		if err := copyEOFOrN(archive, sealedSHABuffer, 8192); err != nil {
 			return fmt.Errorf("failed to write sealed snapshot hashes: %v", err)
 		}
 	}
@@ -239,17 +239,18 @@ func read(in io.Reader, metadata *raft.SnapshotMeta, snap io.Writer, sealer Seal
 			}
 
 		case "state.bin":
+			// we don't need to enforce a limit since we validate checksums
 			if _, err := io.Copy(io.MultiWriter(snap, snapHash), archive); err != nil {
 				return fmt.Errorf("failed to read or write snapshot data: %v", err)
 			}
 
 		case "SHA256SUMS":
-			if _, err := io.Copy(&shaBuffer, archive); err != nil {
+			if err := copyEOFOrN(&shaBuffer, archive, 8192); err != nil {
 				return fmt.Errorf("failed to read snapshot hashes: %v", err)
 			}
 
 		case "SHA256SUMS.sealed":
-			if _, err := io.Copy(&sealedSHABuffer, archive); err != nil {
+			if err := copyEOFOrN(&sealedSHABuffer, archive, 8192); err != nil {
 				return fmt.Errorf("failed to read snapshot hashes: %v", err)
 			}
 
@@ -275,4 +276,15 @@ func read(in io.Reader, metadata *raft.SnapshotMeta, snap io.Writer, sealer Seal
 	}
 
 	return nil
+}
+
+// copyEOFOrN copies until either EOF or maxBytesToRead was hit, or an error
+// occurs. If a non-EOF error occurs, return it
+func copyEOFOrN(dst io.Writer, src io.Reader, maxBytesToRead int64) error {
+	_, err := io.CopyN(dst, src, maxBytesToRead)
+	if err == io.EOF {
+		return nil
+	}
+
+	return err
 }
