@@ -238,7 +238,6 @@ func read(in io.Reader, metadata *raft.SnapshotMeta, snap io.Writer, sealer Seal
 			}
 
 		case "state.bin":
-			// we don't need to enforce a limit since we validate checksums
 			if _, err := io.Copy(io.MultiWriter(snap, snapHash), archive); err != nil {
 				return fmt.Errorf("failed to read or write snapshot data: %v", err)
 			}
