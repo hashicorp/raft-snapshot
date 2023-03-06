@@ -8,13 +8,11 @@ on:
     tags: ["*"]
 
 jobs:
-  test-and-build:
+  go-test:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-go@v3
       with:
         go-version-file: 'go.mod'
-
-    # Build and test.
     - run: go test -v ./...
