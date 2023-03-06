@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches: ["master"]
+    tags: ["*"]
+
+jobs:
+  service:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+      with:
+        go-version-file: 'service/go.mod'
+
+    # Build and test.
+    - run: go test -v ./...

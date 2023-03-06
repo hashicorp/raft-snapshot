@@ -1,6 +1,6 @@
 module github.com/hashicorp/raft-snapshot
 
-go 1.12
+go 1.20
 
 require (
 	github.com/armon/go-metrics v0.0.0-20190430140413-ec5e00d3c878 // indirect
