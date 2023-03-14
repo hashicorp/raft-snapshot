@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/consul/sdk v0.13.1
 	github.com/hashicorp/go-hclog v0.12.0
 	github.com/hashicorp/go-msgpack v0.5.5
-	github.com/hashicorp/raft v1.0.1
+	github.com/hashicorp/raft v1.3.11
 )
 
 require (
