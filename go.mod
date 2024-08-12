@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/hashicorp/consul/sdk v0.14.0
-	github.com/hashicorp/go-hclog v1.5.0
+	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-msgpack v0.5.5
 	github.com/hashicorp/raft v1.4.0
 )
