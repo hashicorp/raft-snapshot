@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -69,7 +70,9 @@ func (m *MockSnapshot) Persist(sink raft.SnapshotSink) error {
 	hd := codec.MsgpackHandle{}
 	enc := codec.NewEncoder(sink, &hd)
 	if err := enc.Encode(m.logs[:m.maxIndex]); err != nil {
-		sink.Cancel()
+		if err := sink.Cancel(); err != nil {
+			log.Printf("Failed to cancel sink: %v", err)
+		}
 		return err
 	}
 	sink.Close()
@@ -153,7 +156,11 @@ func fileSha256(t *testing.T, f *os.File) string {
 
 func TestSnapshot(t *testing.T) {
 	dir := testutil.TempDir(t, "snapshot")
-	defer os.RemoveAll(dir)
+	defer func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Fatalf("failed to remove directory: %v", err)
+		}
+	}()
 
 	// Make a Raft and populate it with some data. We tee everything we
 	// apply off to a buffer for checking post-snapshot.
@@ -181,7 +188,11 @@ func TestSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	defer snap.Close()
+	defer func() {
+		if err := snap.Close(); err != nil {
+			t.Fatalf("failed to close snap: %v", err)
+		}
+	}()
 
 	// Verify checksum is populated
 	snapChecksum := snap.Checksum()
@@ -244,7 +255,11 @@ func TestSnapshot(t *testing.T) {
 
 func TestSnapshotWrite(t *testing.T) {
 	dir := testutil.TempDir(t, "snapshot")
-	defer os.RemoveAll(dir)
+	defer func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Fatalf("failed to remove the directory: %v", err)
+		}
+	}()
 
 	// Make a Raft and populate it with some data. We tee everything we
 	// apply off to a buffer for checking post-snapshot.
@@ -273,11 +288,15 @@ func TestSnapshotWrite(t *testing.T) {
 		t.Fatalf("err: %v", err)
 	}
 
-	Write(logger, before, nil, snap)
+	err = Write(logger, before, nil, snap)
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	defer snap.Close()
+	defer func() {
+		if err := snap.Close(); err != nil {
+			t.Fatalf("failed to close snap: %v", err)
+		}
+	}()
 
 	if _, err := snap.Seek(0, 0); err != nil {
 		t.Fatalf("err: %v", err)
@@ -362,7 +381,11 @@ func TestSnapshot_BadVerify(t *testing.T) {
 
 func TestSnapshot_TruncatedVerify(t *testing.T) {
 	dir := testutil.TempDir(t, "snapshot")
-	defer os.RemoveAll(dir)
+	defer func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Fatalf("failed to remove the directory: %v", err)
+		}
+	}()
 
 	// Make a Raft and populate it with some data. We tee everything we
 	// apply off to a buffer for checking post-snapshot.
@@ -391,7 +414,11 @@ func TestSnapshot_TruncatedVerify(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	defer snap.Close()
+	defer func() {
+		if err := snap.Close(); err != nil {
+			t.Fatalf("failed to close snap: %v", err)
+		}
+	}()
 
 	var data []byte
 	{
@@ -418,7 +445,11 @@ func TestSnapshot_TruncatedVerify(t *testing.T) {
 
 func TestSnapshot_BadRestore(t *testing.T) {
 	dir := testutil.TempDir(t, "snapshot")
-	defer os.RemoveAll(dir)
+	defer func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Fatalf("failed to remove the directory: %v", err)
+		}
+	}()
 
 	// Make a Raft and populate it with some data.
 	before, _ := makeRaft(t, filepath.Join(dir, "before"))
