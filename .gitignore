@@ -1,0 +1,164 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+.cover
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
+*.exe
+*.test
+*.prof
+
+# Other dirs
+/bin/
+/pkg/
+
+# Generated Web UI goes here
+/http/web_ui/*.*
+/http/web_ui/**/*.*
+
+# Vault-specific
+example.hcl
+example.vault.d
+
+# Without this, the *.[568vq] above ignores this folder.
+!**/graphrbac/1.6
+
+# Ruby
+website/vendor
+website/.bundle
+website/build
+website/tmp
+
+# Vagrant
+.vagrant/
+Vagrantfile
+
+# Configs
+*.hcl
+!.copywrite.hcl
+!.release/ci.hcl
+!.release/pipeline.hcl
+!.release/security-scan.hcl
+!.release/linux/package/etc/vault.d/vault.hcl
+!enos/**/*.hcl
+!**/fixtures/*.hcl
+!**/test-fixtures/**/*.hcl
+!**/testdata/*.hcl
+
+# Enos
+.enos
+enos-local.vars.hcl
+enos/**/support
+enos/**/kubeconfig
+enos/modules/**/plan.yml
+enos/sarif**.json
+**/.terraform/*
+**.terraform.lock.hcl
+**terraform.tfstate
+**.tfstate.*
+**.terraform.tfstate.lock.info
+
+.DS_Store
+.idea
+.vscode
+
+# VSCode debugger executable
+__debug_bin*
+
+dist/*
+
+# ignore ctags
+./tags
+
+# Editor backups
+*~
+*.sw[a-z]
+
+# IntelliJ IDEA project files
+.idea
+*.ipr
+*.iml
+
+# compiled output
+ui/dist
+ui/tmp
+ui/root
+
+# dependencies
+ui/node_modules
+ui/bower_components
+
+# misc
+ui/.DS_Store
+ui/.sass-cache
+ui/connect.lock
+ui/coverage/*
+ui/libpeerconnection.log
+ui/npm-debug.log
+ui/test-reports/*
+ui/testem.log
+
+# used for JS acceptance tests
+ui/tests/helpers/vault-keys.js
+ui/vault-ui-integration-server.pid
+
+# for building static assets
+node_modules
+
+# Website
+website/.bundle
+website/build/
+website/npm-debug.log
+website/vendor
+website/.bundle
+website/.cache
+website/assets/node_modules
+website/assets/public
+website/components/node_modules
+
+.buildcache/
+.releaser/
+
+# OSS PackageSpec artifiacts
+packages-oss.yml
+packages-oss.lock/
+
+*.log
+
+tools/godoctests/.bin
+tools/gonilnilfunctions/.bin
+tools/codechecker/.bin
+tools/pipeline/.bin
+tools/pipeline/pipeline
+.ci-bootstrap
+
+# scratch directory holding random stuff
+scratch
+
+# ignore Idea/Goland .run directory
+.run
+
+# .agents/
+.agents/tmp
+# per-engineer agent preferences
+.agents/preferences/user.preferences.md
+
+# .bob/
+.bob/notes
+.bob/tmp
