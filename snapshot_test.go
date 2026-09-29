@@ -115,7 +115,11 @@ func makeRaft(t *testing.T, dir string) (*raft.Raft, *MockFSM) {
 	}
 
 	timeout := time.After(10 * time.Second)
-	for raft.Leader() != "" {
+	for {
+		//nolint
+		if raft.Leader() != "" {
+			break
+		}
 		select {
 		case <-raft.LeaderCh():
 		case <-time.After(1 * time.Second):
