@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MPL-2.0
 
 linters:
- enable:
-   - errcheck
-   - staticcheck
-output_format: colored-line-number
+  enable:
+    - errcheck
+    - staticcheck
