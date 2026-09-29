@@ -18,7 +18,7 @@ jobs:
       with:
         go-version-file: 'go.mod'
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@114493f9b3e7257d29e4130f2b4a4aadefbb6845 # v2.14.0
+      uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
     - name: Run tests and generate coverage report
       run: go test -v -coverprofile=coverage.out ./... 
     - name: Upload coverage report
